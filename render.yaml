@@ -20,11 +20,6 @@ services:
         value: 30
       - key: BASE_URL
         value: https://url-cutter.onrender.com
-    databases:
-      - name: url_cutter_db
-        databaseName: url_cutter
-        user: url_cutter
-        plan: free
     healthCheckPath: /api/v1/health
     autoDeploy: true
 
@@ -41,3 +36,4 @@ databases:
   - name: url-cutter-db
     databaseName: url_cutter
     user: url_cutter 
+    plan: free
