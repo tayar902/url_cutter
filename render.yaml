@@ -1,5 +1,4 @@
 services:
-  # API сервис
   - type: web
     name: url-cutter
     env: python
@@ -7,7 +6,7 @@ services:
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.0
+        value: 3.13.2
       - key: DATABASE_URL
         fromDatabase:
           name: url_cutter_db
@@ -19,7 +18,7 @@ services:
       - key: SECRET_KEY
         generateValue: true
       - key: BASE_URL
-        value: https://your-app-name.onrender.com  # Замените на ваш URL
+        value: https://url-cutter-tayar902.onrender.com
       - key: LINK_EXPIRATION_DAYS
         value: 180
       - key: ACCESS_TOKEN_EXPIRE_MINUTES
