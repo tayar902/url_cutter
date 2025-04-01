@@ -30,17 +30,15 @@ services:
         value: 1.0.0
       - key: API_V1_STR
         value: /api/v1
-
-  # Valkey (Redis) сервис
-  - type: redis
-    name: url-cutter-valkey
-    ipAllowList:
-      - source: 0.0.0.0/0
-        description: Allow all traffic
     plan: free
 
 databases:
   # База данных PostgreSQL
-  - name: url-cutter-db
+  - name: url_cutter_db
     databaseName: url_cutter
-    user: url_cutter 
+    user: url_cutter
+    plan: free
+
+  - name: url_cutter_redis
+    databaseName: url_cutter_redis
+    plan: free 
