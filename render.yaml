@@ -1,30 +1,32 @@
 services:
   # API сервис
   - type: web
-    name: url-cutter-api
+    name: url-cutter
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.2
       - key: DATABASE_URL
         fromDatabase:
-          name: url-cutter-db
+          name: url_cutter_db
           property: connectionString
       - key: REDIS_URL
-        fromService:
-          name: url-cutter-valkey
-          type: redis
-          property: connectionString
+        value: redis://redis:6379/0
       - key: SECRET_KEY
         generateValue: true
-      - key: ALGORITHM
-        value: HS256
       - key: ACCESS_TOKEN_EXPIRE_MINUTES
         value: 30
       - key: BASE_URL
-        sync: false
-      - key: PYTHON_VERSION
-        value: 3.11.0
+        value: https://url-cutter.onrender.com
+    databases:
+      - name: url_cutter_db
+        databaseName: url_cutter
+        user: url_cutter
+        plan: free
+    healthCheckPath: /api/v1/health
+    autoDeploy: true
 
   # Valkey (Redis) сервис
   - type: redis

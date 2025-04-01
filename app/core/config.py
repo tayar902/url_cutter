@@ -7,7 +7,7 @@ load_dotenv()
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "URL Cutter"
-    API_V1_STR: str = ""
+    API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = os.getenv("SECRET_KEY", "test_secret_key")
     
     # 60 minutes * 24 hours * 8 days = 8 days
@@ -16,25 +16,22 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     
     # Database
-    POSTGRES_SERVER: str = "db"
-    POSTGRES_USER: str = "postgres"
-    POSTGRES_PASSWORD: str = "postgres"
-    POSTGRES_DB: str = "url_cutter"
-    POSTGRES_PORT: int = 5433
-    SQLALCHEMY_DATABASE_URI: Optional[str] = None
+    POSTGRES_SERVER: str = os.getenv("POSTGRES_SERVER", "db")
+    POSTGRES_USER: str = os.getenv("POSTGRES_USER", "postgres")
+    POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", "postgres")
+    POSTGRES_DB: str = os.getenv("POSTGRES_DB", "url_cutter")
+    POSTGRES_PORT: int = int(os.getenv("POSTGRES_PORT", "5432"))
+    SQLALCHEMY_DATABASE_URI: Optional[str] = os.getenv("DATABASE_URL")
     
     # Redis
-    REDIS_HOST: str = "redis"
-    REDIS_PORT: int = 6379
-    REDIS_DB: int = 0
-    REDIS_URL: str = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
+    REDIS_URL: str = os.getenv("REDIS_URL", "redis://redis:6379/0")
     
     # Link settings
     LINK_EXPIRATION_DAYS: int = 180  # Default link expiration (if not specified)
     SHORT_CODE_LENGTH: int = 6  # Default short code length
     
     # Base URL for short links
-    BASE_URL: str = "http://localhost:8000"
+    BASE_URL: str = os.getenv("BASE_URL", "http://localhost:8000")
     
     @property
     def DATABASE_URL(self) -> str:
