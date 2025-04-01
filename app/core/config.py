@@ -13,7 +13,7 @@ class Settings(BaseSettings):
     # 60 minutes * 24 hours * 8 days = 8 days
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60 * 24 * 8))
     
-    ALGORITHM: str = os.getenv("ALGORITHM", "HS256")
+    ALGORITHM: str = "HS256"
     
     # Database
     POSTGRES_SERVER: str = "db"
@@ -24,7 +24,10 @@ class Settings(BaseSettings):
     SQLALCHEMY_DATABASE_URI: Optional[str] = None
     
     # Redis
-    REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+    REDIS_HOST: str = "redis"
+    REDIS_PORT: int = 6379
+    REDIS_DB: int = 0
+    REDIS_URL: str = f"redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}"
     
     # Link settings
     LINK_EXPIRATION_DAYS: int = 180  # Default link expiration (if not specified)
