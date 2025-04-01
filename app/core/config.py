@@ -1,46 +1,34 @@
-from typing import Any, Dict, Optional
-from pydantic import PostgresDsn, validator
 from pydantic_settings import BaseSettings
 import os
+from typing import List, Optional
 from dotenv import load_dotenv
 
 load_dotenv()
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "URL Cutter"
-    VERSION: str = "1.0.0"
-    API_V1_STR: str = "/api/v1"
+    API_V1_STR: str = ""
+    SECRET_KEY: str = os.getenv("SECRET_KEY", "test_secret_key")
     
-    POSTGRES_SERVER: str
-    POSTGRES_USER: str
-    POSTGRES_PASSWORD: str
-    POSTGRES_DB: str
-    SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
+    # 8 days
+    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60 * 24 * 8))
     
-    @validator("SQLALCHEMY_DATABASE_URI", pre=True)
-    def assemble_db_connection(cls, v: Optional[str], values: Dict[str, Any]) -> Any:
-        if isinstance(v, str):
-            return v
-        return PostgresDsn.build(
-            scheme="postgresql+asyncpg",
-            username=values.get("POSTGRES_USER"),
-            password=values.get("POSTGRES_PASSWORD"),
-            host=values.get("POSTGRES_SERVER"),
-            path=f"/{values.get('POSTGRES_DB') or ''}",
-        )
+    ALGORITHM: str = os.getenv("ALGORITHM", "HS256")
     
-    REDIS_HOST: str = "localhost"
-    REDIS_PORT: int = 6379
-    REDIS_DB: int = 0
+    # Database
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql+asyncpg://postgres:postgres@localhost:5433/url_cutter")
     
-    SECRET_KEY: str
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8  # 8 дней
+    # Redis
+    REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
     
+    # Link settings
+    LINK_EXPIRATION_DAYS: int = 180  # Default link expiration (if not specified)
+    SHORT_CODE_LENGTH: int = 6  # Default short code length
+    
+    # Base URL for short links
     BASE_URL: str = "http://localhost:8000"
-    LINK_EXPIRATION_DAYS: int = 30
     
     class Config:
         case_sensitive = True
-        env_file = ".env"
 
 settings = Settings() 

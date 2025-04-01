@@ -1,37 +1,70 @@
+from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
-from pydantic import BaseModel, EmailStr
 
 
 class UserBase(BaseModel):
-    """Базовая схема пользователя"""
-    email: EmailStr
-    is_active: bool = True
-    is_superuser: bool = False
+    email: Optional[EmailStr] = Field(
+        None, 
+        description="Email пользователя",
+        example="user@example.com"
+    )
+    username: Optional[str] = Field(
+        None, 
+        description="Имя пользователя",
+        example="johndoe"
+    )
+    is_active: Optional[bool] = Field(
+        True, 
+        description="Флаг активности пользователя"
+    )
 
 
 class UserCreate(UserBase):
-    """Схема для создания пользователя"""
-    password: str
+    email: EmailStr = Field(
+        ..., 
+        description="Email пользователя (обязательно)",
+        example="user@example.com"
+    )
+    username: str = Field(
+        ..., 
+        description="Имя пользователя (обязательно)",
+        example="johndoe",
+        min_length=3,
+        max_length=50
+    )
+    password: str = Field(
+        ..., 
+        description="Пароль пользователя (обязательно)",
+        example="password123",
+        min_length=6
+    )
 
 
-class UserUpdate(BaseModel):
-    """Схема для обновления пользователя"""
-    email: Optional[EmailStr] = None
-    password: Optional[str] = None
-    is_active: Optional[bool] = None
-    is_superuser: Optional[bool] = None
+class UserUpdate(UserBase):
+    password: Optional[str] = Field(
+        None, 
+        description="Новый пароль пользователя (опционально)",
+        example="newpassword123",
+        min_length=6
+    )
 
 
 class UserInDBBase(UserBase):
-    """Базовая схема пользователя в БД"""
-    id: int
+    id: Optional[int] = Field(
+        None, 
+        description="Уникальный идентификатор пользователя"
+    )
+
+    class Config:
+        orm_mode = True
 
 
 class User(UserInDBBase):
-    """Схема пользователя для ответа"""
     pass
 
 
 class UserInDB(UserInDBBase):
-    """Схема пользователя в БД"""
-    hashed_password: str 
+    hashed_password: str = Field(
+        ..., 
+        description="Хешированный пароль пользователя (для внутреннего использования)"
+    ) 

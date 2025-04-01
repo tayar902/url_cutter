@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 from typing import Optional, List, Union, Dict, Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -57,18 +57,25 @@ async def create(
 ) -> Link:
     short_code = custom_short_code or obj_in.custom_alias
     
+    # Если не задан кастомный код, генерируем случайный
     if not short_code:
         while True:
             short_code = generate_short_code(settings.SHORT_CODE_LENGTH)
+            # Проверяем, что такой код не существует
             result = await db.execute(select(Link).where(Link.short_code == short_code))
             if not result.scalars().first():
                 break
     else:
+        # Проверяем, что такой кастомный код не существует
         result = await db.execute(select(Link).where(Link.short_code == short_code))
         if result.scalars().first():
             raise ValueError(f"Короткий код '{short_code}' уже используется")
     
+    # Используем переданное время истечения или глобальную настройку
+    from datetime import datetime, timedelta
     expires_at = obj_in.expires_at
+    
+    # Если время истечения не указано, используем глобальную настройку
     if expires_at is None:
         expires_at = datetime.now() + timedelta(days=settings.LINK_EXPIRATION_DAYS)
     

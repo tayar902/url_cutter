@@ -1,13 +1,23 @@
+from pydantic import BaseModel, Field
 from typing import Optional
-from pydantic import BaseModel
 
 
 class Token(BaseModel):
-    """Схема токена"""
-    access_token: str
-    token_type: str = "bearer"
+    access_token: str = Field(
+        ..., 
+        description="JWT токен доступа",
+        example="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2MTY4NjU0MjIsInN1YiI6IjEifQ.example"
+    )
+    token_type: str = Field(
+        ..., 
+        description="Тип токена",
+        example="bearer"
+    )
 
 
 class TokenPayload(BaseModel):
-    """Схема данных токена"""
-    sub: Optional[int] = None 
+    sub: Optional[int] = Field(
+        None, 
+        description="Идентификатор пользователя (subject)",
+        example=1
+    ) 
