@@ -25,7 +25,7 @@ services:
 
   # Valkey (Redis) сервис
   - type: redis
-    name: url-cutter-valkey
+    name: url_cutter_valkey
     ipAllowList:
       - source: 0.0.0.0/0
         description: Allow all traffic
@@ -33,7 +33,7 @@ services:
 
 databases:
   # База данных PostgreSQL
-  - name: url-cutter-db
+  - name: url_cutter_db
     databaseName: url_cutter
     user: url_cutter 
     plan: free
