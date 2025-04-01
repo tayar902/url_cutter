@@ -9,7 +9,7 @@ from app.db.session import get_db
 from app.core.config import settings
 from app.core.security import create_access_token
 from app.schemas.token import Token
-from app.schemas.user import UserCreate
+from app.schemas.user import User, UserCreate
 from app.crud import user as user_crud
 
 router = APIRouter()

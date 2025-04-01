@@ -3,7 +3,7 @@ from typing import Optional, List, Union, Dict, Any
 
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy import delete, func, or_, and_
+from sqlalchemy import update, delete, func, or_, and_
 
 from app.core.security import generate_short_code
 from app.core.config import settings
