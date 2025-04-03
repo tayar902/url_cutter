@@ -83,4 +83,4 @@ async def is_active(user: User) -> bool:
 
 
 async def is_superuser(user: User) -> bool:
-    return user.is_superuser 
+    return user.is_superuser

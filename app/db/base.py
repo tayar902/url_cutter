@@ -3,11 +3,10 @@ from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.sql import func
 from sqlalchemy import Column, DateTime
-from typing import Any
 
 from app.core.config import settings
 
-# Явно указываем использование asyncpg в URL, если его там нет
+# Явно указываем использование asyncpg
 db_url = settings.DATABASE_URL
 if not db_url.startswith("postgresql+asyncpg://"):
     db_url = db_url.replace("postgresql://", "postgresql+asyncpg://", 1)

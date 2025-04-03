@@ -9,12 +9,12 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "URL Cutter"
     SECRET_KEY: str = os.getenv("SECRET_KEY", "test_secret_key")
     
-    # 60 minutes * 24 hours * 8 days = 8 days
+    # дефолтно 8 дней
     ACCESS_TOKEN_EXPIRE_MINUTES: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", 60 * 24 * 8))
     
     ALGORITHM: str = "HS256"
     
-    # Database
+    # Подключение к postgres
     POSTGRES_SERVER: str = os.getenv("POSTGRES_SERVER", "db")
     POSTGRES_USER: str = os.getenv("POSTGRES_USER", "postgres")
     POSTGRES_PASSWORD: str = os.getenv("POSTGRES_PASSWORD", "postgres")
@@ -22,14 +22,14 @@ class Settings(BaseSettings):
     POSTGRES_PORT: int = int(os.getenv("POSTGRES_PORT", "5432"))
     SQLALCHEMY_DATABASE_URI: Optional[str] = os.getenv("DATABASE_URL")
     
-    # Redis
+    # Подключение к reidis
     REDIS_URL: str = os.getenv("REDIS_URL", "redis://redis:6379/0")
     
-    # Link settings
-    LINK_EXPIRATION_DAYS: int = 180  # Default link expiration (if not specified)
-    SHORT_CODE_LENGTH: int = 6  # Default short code length
+    # Параметры для ссылок
+    LINK_EXPIRATION_DAYS: int = 180
+    SHORT_CODE_LENGTH: int = 6
     
-    # Base URL for short links
+    # Основной URL
     BASE_URL: str = os.getenv("BASE_URL", "http://localhost:8000")
     
     @property
@@ -41,4 +41,5 @@ class Settings(BaseSettings):
     class Config:
         case_sensitive = True
 
-settings = Settings() 
+
+settings = Settings()

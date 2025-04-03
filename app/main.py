@@ -1,17 +1,14 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-import asyncio
 import logging
 from contextlib import asynccontextmanager
 
 from app.api.routes import links, auth
 from app.core.config import settings
 from app.db.base import Base, engine
-# Импортируем все модели для правильной инициализации
-from app.models.user import User
-from app.models.link import Link
 
-# Настройка логирования
+
+# TODO настроить нормальное логирование
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -31,28 +28,21 @@ description = """
 ## Особенности
 * **Создание ссылок без авторизации** - вы можете создавать короткие ссылки без регистрации
 * **Управление ссылками с авторизацией** - регистрация дает доступ к дополнительным функциям
-* **Настройка времени жизни** - задавайте свое время истечения ссылок
+* **Настройка времени действия ссылок** - задавайте свое время истечения ссылок
 
 ## Авторизация
-Для управления ссылками необходимо сначала зарегистрироваться через `/auth/register`.
-После регистрации вы автоматически получите токен доступа.
+Для управления ссылками необходимо сначала зарегистрироваться через `/auth/register`
 """
 
 
+# TODO Кажется не очень хорошо инициализировать БД здесь и стоит вынести в другое место
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Код, выполняемый при запуске приложения
     logger.info("Запуск приложения...")
     try:
-        # Проверяем подключение к базе данных
         logger.info("Проверка подключения к базе данных...")
         async with engine.begin() as conn:
-            # Создаем таблицы, если они не существуют
             logger.info("Создание таблиц базы данных...")
-            # Выводим все таблицы, которые будут созданы
-            tables = Base.metadata.tables.keys()
-            logger.info(f"Таблицы для создания: {', '.join(tables)}")
-
             await conn.run_sync(Base.metadata.create_all)
             logger.info("Таблицы успешно созданы")
     except Exception as e:
@@ -61,7 +51,6 @@ async def lifespan(app: FastAPI):
 
     yield
 
-    # Код, выполняемый при завершении работы приложения
     logger.info("Завершение работы приложения...")
 
 app = FastAPI(
@@ -85,6 +74,7 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
+# TODO настроить корректные значения
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -100,9 +90,10 @@ app.include_router(links.router, tags=["links"])
 async def root():
     """
     Возвращает базовую информацию о состоянии API.
-    Используйте `/docs` для доступа к интерактивной документации Swagger UI.
     """
-    return {"message": "URL Cutter API работает", "status": "online"}
+    return {"message": """URL Cutter API работает. 
+            Используйте `/docs` для доступа к интерактивной документации Swagger UI""",
+            "status": "online"}
 
 if __name__ == "__main__":
     import uvicorn

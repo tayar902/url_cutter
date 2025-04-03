@@ -14,7 +14,7 @@ from app.core.security import pwd_context
 from app.models.user import User
 from app.schemas.token import TokenPayload
 
-# Создаем OAuth2PasswordBearer без требования авторизации (auto_error=False)
+# TODO проверить логику
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f"/auth/login",
     auto_error=False  # Не вызывать ошибку, если токен не предоставлен
@@ -94,4 +94,4 @@ async def get_optional_current_user(
     if not user or not user.is_active:
         return None
     
-    return user 
+    return user
