@@ -75,7 +75,7 @@ async def redirect_to_original_url(
           description="Создаёт короткую ссылку для оригинального URL. Можно указать срок действия ссылки.")
 async def create_short_link(
     link_in: LinkCreate = Body(..., example={
-        "original_url": "https://www.example.com/very/long/url/that/needs/shortening",
+        "original_url": "https://tenor.com/en-GB/view/дон-симон-сергей-симонов-охота-gif-5491422726335977617",
         "custom_alias": "mylink",
         "expires_at": "2026-12-31T23:59:00Z"
     }),
@@ -232,7 +232,8 @@ async def get_link_stats(
           description="Обновляет оригинальный URL для существующей короткой ссылки")
 async def update_link(
     short_code: str = Path(..., description="Короткий код ссылки"),
-    link_in: LinkUpdate = Body(..., example={"original_url": "https://www.new-example.com/updated/url"}),
+    link_in: LinkUpdate = Body(..., example={
+                               "original_url": "https://tenor.com/en-GB/view/дон-симон-сергей-симонов-охота-gif-5491422726335977617"}),
     db: AsyncSession = Depends(get_db),
     redis_client: redis.Redis = Depends(get_redis),
     current_user: User = Depends(get_current_active_user),
