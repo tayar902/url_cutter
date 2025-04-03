@@ -11,4 +11,4 @@ async def get_redis():
     except Exception as e:
         raise e
     finally:
-        pass  # Redis connections are managed by the client
+        pass

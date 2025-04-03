@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 import logging
+from contextlib import asynccontextmanager
 
 from app.api.routes import links, auth
 from app.core.config import settings
@@ -35,12 +36,33 @@ description = """
 ## Авторизация
 Для управления ссылками необходимо сначала зарегистрироваться через `/auth/register`.
 После регистрации вы автоматически получите токен доступа.
-
-## Срок действия ссылок
-Вы можете указать конкретное время истечения ссылки при создании через параметр `expires_at`.
-Если время не указано, ссылке будет установлен срок жизни **{settings.LINK_EXPIRATION_DAYS} дней** с момента создания.
-После истечения срока действия ссылка автоматически становится недоступной.
 """
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Код, выполняемый при запуске приложения
+    logger.info("Запуск приложения...")
+    try:
+        # Проверяем подключение к базе данных
+        logger.info("Проверка подключения к базе данных...")
+        async with engine.begin() as conn:
+            # Создаем таблицы, если они не существуют
+            logger.info("Создание таблиц базы данных...")
+            # Выводим все таблицы, которые будут созданы
+            tables = Base.metadata.tables.keys()
+            logger.info(f"Таблицы для создания: {', '.join(tables)}")
+
+            await conn.run_sync(Base.metadata.create_all)
+            logger.info("Таблицы успешно созданы")
+    except Exception as e:
+        logger.error(f"Ошибка при инициализации базы данных: {e}")
+        raise e
+
+    yield
+
+    # Код, выполняемый при завершении работы приложения
+    logger.info("Завершение работы приложения...")
 
 app = FastAPI(
     title="URL Cutter API",
@@ -60,6 +82,7 @@ app = FastAPI(
             "description": "Проверка статуса API",
         },
     ],
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -69,26 +92,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Создаем таблицы при запуске приложения
-@app.on_event("startup")
-async def startup():
-    logger.info("Запуск приложения...")
-    try:
-        # Проверяем подключение к базе данных
-        logger.info("Проверка подключения к базе данных...")
-        async with engine.begin() as conn:
-            # Создаем таблицы, если они не существуют
-            logger.info("Создание таблиц базы данных...")
-            # Выводим все таблицы, которые будут созданы
-            tables = Base.metadata.tables.keys()
-            logger.info(f"Таблицы для создания: {', '.join(tables)}")
-            
-            await conn.run_sync(Base.metadata.create_all)
-            logger.info("Таблицы успешно созданы")
-    except Exception as e:
-        logger.error(f"Ошибка при инициализации базы данных: {e}")
-        raise e
 
 app.include_router(auth.router, prefix="/auth", tags=["auth"])
 app.include_router(links.router, tags=["links"])

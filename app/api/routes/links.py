@@ -1,6 +1,6 @@
 from typing import Any, List, Optional
 from datetime import datetime
-
+import logging
 from fastapi import APIRouter, Body, Depends, HTTPException, Path, Query, Request, Response, status
 from fastapi.responses import RedirectResponse
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -15,6 +15,7 @@ from app.schemas.link import Link, LinkCreate, LinkUpdate, LinkStats, LinkSearch
 from app.crud import link as link_crud
 
 router = APIRouter()
+logger = logging.Logger('links_api')
 
 
 # Редирект по короткой ссылке (публичный доступ)
@@ -37,7 +38,9 @@ async def redirect_to_original_url(
     """
     # Сначала проверяем кэш Redis
     cached_url = await redis_client.get(f"link:{short_code}")
+    logger.info(f'ABOBA')
     if cached_url:
+        logger.info(f'Найден url в кэше: {cached_url}')
         link = await link_crud.get_by_short_code(db, short_code=short_code)
         if link:
             # Инкрементируем счетчик переходов и обновляем дату последнего использования
@@ -72,7 +75,7 @@ async def create_short_link(
     link_in: LinkCreate = Body(..., example={
         "original_url": "https://www.example.com/very/long/url/that/needs/shortening",
         "custom_alias": "mylink",
-        "expires_at": "2023-12-31T23:59:00Z"
+        "expires_at": "2026-12-31T23:59:00Z"
     }),
     db: AsyncSession = Depends(get_db),
     current_user: Optional[User] = Depends(get_optional_current_user),
@@ -304,28 +307,3 @@ async def delete_link(
     await redis_client.delete(f"link:{short_code}")
     
     return Response(status_code=status.HTTP_204_NO_CONTENT)
-
-
-# Удаление неиспользуемых ссылок (дополнительная функциональность)
-@router.delete("/links/cleanup", status_code=status.HTTP_200_OK,
-             summary="Удаление истекших ссылок",
-             description="Удаляет все истекшие ссылки из базы данных (только для администраторов)")
-async def cleanup_unused_links(
-    db: AsyncSession = Depends(get_db),
-    current_user: User = Depends(get_current_active_user),
-) -> Any:
-    """
-    Удаление всех истекших ссылок из базы данных.
-    
-    Доступно только для пользователей с правами администратора.
-    Возвращает количество удаленных ссылок.
-    """
-    if not current_user.is_superuser:
-        raise HTTPException(
-            status_code=403,
-            detail="Только администраторы могут выполнять эту операцию",
-        )
-    
-    deleted_count = await link_crud.remove_expired_links(db)
-    
-    return {"deleted_count": deleted_count} 

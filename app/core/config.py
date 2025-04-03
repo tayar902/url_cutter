@@ -7,7 +7,6 @@ load_dotenv()
 
 class Settings(BaseSettings):
     PROJECT_NAME: str = "URL Cutter"
-    API_V1_STR: str = "/api/v1"
     SECRET_KEY: str = os.getenv("SECRET_KEY", "test_secret_key")
     
     # 60 minutes * 24 hours * 8 days = 8 days

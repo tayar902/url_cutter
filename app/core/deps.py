@@ -16,7 +16,7 @@ from app.schemas.token import TokenPayload
 
 # Создаем OAuth2PasswordBearer без требования авторизации (auto_error=False)
 reusable_oauth2 = OAuth2PasswordBearer(
-    tokenUrl=f"{settings.API_V1_STR}/auth/login",
+    tokenUrl=f"/auth/login",
     auto_error=False  # Не вызывать ошибку, если токен не предоставлен
 )
 

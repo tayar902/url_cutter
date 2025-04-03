@@ -29,7 +29,7 @@ class LinkCreate(LinkBase):
     expires_at: Optional[datetime] = Field(
         None, 
         description="Дата и время истечения ссылки (в формате ISO 8601 с точностью до минуты)",
-        example="2023-12-31T23:59:00Z"
+        example="2026-12-31T23:59:00Z"
     )
 
 
