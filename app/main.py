@@ -91,10 +91,10 @@ async def root():
     """
     Возвращает базовую информацию о состоянии API.
     """
-    return {"message": """URL Cutter API работает. 
-            Используйте `/docs` для доступа к интерактивной документации Swagger UI""",
+    return {"message": "URL Cutter API работает." +
+            "Используйте `/docs` для доступа к интерактивной документации Swagger UI",
             "status": "online"}
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True) 
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)

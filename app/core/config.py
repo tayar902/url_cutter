@@ -23,8 +23,9 @@ class Settings(BaseSettings):
     SQLALCHEMY_DATABASE_URI: Optional[str] = os.getenv("DATABASE_URL")
     
     # Подключение к reidis
-    REDIS_URL: str = os.getenv("REDIS_URL", "redis://redis:6379/0")
-    
+    REDIS_URL: str = os.getenv("REDIS_URL", "redis://valkey:6379/0")
+
+
     # Параметры для ссылок
     LINK_EXPIRATION_DAYS: int = 180
     SHORT_CODE_LENGTH: int = 6

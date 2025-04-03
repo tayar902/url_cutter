@@ -36,8 +36,10 @@ async def redirect_to_original_url(
     Если ссылка не найдена или срок ее действия истек, возвращает ошибку 404.
     """
     # Сначала проверяем кэш Redis
-    cached_url = await redis_client.get(f"link:{short_code}")
-    logger.info(f'ABOBA')
+    if redis_client:
+        cached_url = await redis_client.get(f"link:{short_code}")
+    else:
+        cached_url == None
     if cached_url:
         logger.info(f'Найден url в кэше: {cached_url}')
         link = await link_crud.get_by_short_code(db, short_code=short_code)
@@ -61,7 +63,8 @@ async def redirect_to_original_url(
     await link_crud.increment_clicks(db, link)
     
     # Кэшируем URL в Redis на 1 час
-    await redis_client.setex(f"link:{short_code}", 3600, link.original_url)
+    if redis_client:
+        await redis_client.setex(f"link:{short_code}", 3600, link.original_url)
     
     return RedirectResponse(url=link.original_url)
 
@@ -259,7 +262,7 @@ async def update_link(
     link = await link_crud.update(db=db, db_obj=link, obj_in=link_in)
     
     # Обновляем кэш в Redis
-    if link_in.original_url:
+    if link_in.original_url and redis_client:
         await redis_client.setex(f"link:{short_code}", 3600, link.original_url)
     
     # Добавляем полный URL в ответ
@@ -303,6 +306,7 @@ async def delete_link(
     await link_crud.remove_by_short_code(db, short_code=short_code)
     
     # Удаляем из кэша Redis
-    await redis_client.delete(f"link:{short_code}")
+    if redis_client:
+        await redis_client.delete(f"link:{short_code}")
     
     return Response(status_code=status.HTTP_204_NO_CONTENT)
