@@ -20,7 +20,6 @@ services:
         value: 30
       - key: BASE_URL
         value: https://url-cutter-tayar.onrender.com
-    healthCheckPath: /api/v1/health
     autoDeploy: true
     plan: free
 
